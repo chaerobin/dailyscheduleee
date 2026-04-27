@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="82" fill="#f8f8f8"/>
+
+  <!-- Calendar body -->
+  <rect x="67" y="92" width="378" height="358" rx="28" fill="white" stroke="#e0e0e0" stroke-width="6"/>
+
+  <!-- Calendar header -->
+  <rect x="67" y="92" width="378" height="92" rx="28" fill="#1a1a1a"/>
+  <rect x="67" y="120" width="378" height="64" fill="#1a1a1a"/>
+
+  <!-- Binding rings -->
+  <circle cx="173" cy="92" r="19" fill="none" stroke="#f8f8f8" stroke-width="14"/>
+  <circle cx="339" cy="92" r="19" fill="none" stroke="#f8f8f8" stroke-width="14"/>
+  <!-- Ring clips (top half visible above calendar) -->
+  <rect x="152" y="71" width="42" height="21" rx="19" fill="#1a1a1a"/>
+  <rect x="318" y="71" width="42" height="21" rx="19" fill="#1a1a1a"/>
+
+  <!-- Timeline spine -->
+  <line x1="173" y1="204" x2="173" y2="430" stroke="#e0e0e0" stroke-width="7"/>
+
+  <!-- Schedule items -->
+  
+    <circle cx="173" cy="226" r="14" fill="#2eaa72"/>
+    <rect x="209" y="207" width="221" height="38" rx="9" fill="white" stroke="#e8e8e8" stroke-width="4"/>
+    <rect x="219" y="218" width="128" height="8" rx="4" fill="#1a1a1a"/>
+    <rect x="219" y="232" width="88" height="6" rx="3" fill="#a0a0a0"/>
+    <circle cx="173" cy="282" r="14" fill="#2eaa72"/>
+    <rect x="209" y="263" width="221" height="38" rx="9" fill="white" stroke="#e8e8e8" stroke-width="4"/>
+    <rect x="219" y="274" width="128" height="8" rx="4" fill="#1a1a1a"/>
+    <rect x="219" y="288" width="88" height="6" rx="3" fill="#a0a0a0"/>
+    <circle cx="173" cy="341" r="14" fill="#b0b0b0"/>
+    <rect x="209" y="322" width="221" height="38" rx="9" fill="white" stroke="#e8e8e8" stroke-width="4"/>
+    <rect x="219" y="333" width="128" height="8" rx="4" fill="#1a1a1a"/>
+    <rect x="219" y="347" width="88" height="6" rx="3" fill="#a0a0a0"/>
+    <circle cx="173" cy="400" r="14" fill="#3a7fcc"/>
+    <rect x="209" y="381" width="221" height="38" rx="9" fill="white" stroke="#e8e8e8" stroke-width="4"/>
+    <rect x="219" y="392" width="128" height="8" rx="4" fill="#1a1a1a"/>
+    <rect x="219" y="406" width="88" height="6" rx="3" fill="#a0a0a0"/>
+</svg>
