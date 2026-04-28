@@ -59,7 +59,6 @@ function migrateStore(s: ScheduleStore): ScheduleStore {
 
   // V3→V4: Replace the April 11 generic default with the custom schedule.
   // V4→V5: Re-seed April 11 to fix wedding meeting category (work → home).
-  // Deleting it here causes the initializer below to reload via getDefaultSchedule.
   if (stored < 5 && migrated['2026-04-11']) {
     delete migrated['2026-04-11'];
     changed = true;
@@ -122,31 +121,29 @@ function migrateStore(s: ScheduleStore): ScheduleStore {
     }
   }
 
-  // V15→V16: Fri/Sat/Sun rebuilt — Netlify+Golden Hour on Fri, Ladder/StretchIt/Makeup on Sat,
-  //          Ladder/StretchIt/Grocery on Sun, Sat Lights Out → 9:30 PM, Sun Lights Out → 8:35 PM.
+  // V15→V16: Fri/Sat/Sun rebuilt.
   if (stored < 16) {
     for (const d of ['2026-04-24','2026-04-25','2026-04-26']) {
       delete migrated[d]; changed = true;
     }
   }
 
-  // V16→V17: Sunday Meal Prep + rest of day pushed 45 min later, Lights Out → 9:50 PM.
+  // V16→V17: Sunday Meal Prep + rest of day pushed 45 min later.
   if (stored < 17) {
     delete migrated['2026-04-26']; changed = true;
   }
 
-  // V17→V18: Sunday Makeup Practice moved to morning Floater slot, Lights Out → 9:20 PM.
+  // V17→V18: Sunday Makeup Practice moved to morning Floater slot.
   if (stored < 18) {
     delete migrated['2026-04-26']; changed = true;
   }
 
-  // V18→V19: Saturday fully rebuilt — shorter morning blocks, Hair Wash before Makeup,
-  //          2hr Wardrobe Audit, Golden Hour + Plan Grocery, DND 6h05m, Lights Out 11 PM.
+  // V18→V19: Saturday fully rebuilt.
   if (stored < 19) {
     delete migrated['2026-04-25']; changed = true;
   }
 
-  // V19→V20: Saturday morning pushed back 1h40m, DND shrinks to 4h25m (5:10–9:35 PM).
+  // V19→V20: Saturday morning pushed back 1h40m.
   if (stored < 20) {
     delete migrated['2026-04-25']; changed = true;
   }
@@ -216,13 +213,11 @@ export function useSchedule() {
   const goPrev = useCallback(() => {
     setCurrentDate(d => {
       const prev = offsetDate(d, -1);
-      // Never navigate before today
       return prev >= todayStr() ? prev : todayStr();
     });
   }, []);
 
   const goToDate = useCallback((date: string) => {
-    // Only allow navigating to today or future
     if (date >= todayStr()) setCurrentDate(date);
   }, []);
 
@@ -251,6 +246,12 @@ export function useSchedule() {
     updateStore(clearDate(store, currentDate));
   }, [currentDate, store, updateStore]);
 
+  const resetDay = useCallback(() => {
+    const defaults = getDefaultSchedule(currentDate);
+    const next = setBlocksForDate(store, currentDate, defaults);
+    updateStore(next);
+  }, [currentDate, store, updateStore]);
+
   const duplicateDay = useCallback((fromDate: string) => {
     updateStore(duplicateDate(store, fromDate, currentDate));
   }, [currentDate, store, updateStore]);
@@ -268,7 +269,7 @@ export function useSchedule() {
     canGoPrev,
     goToday, goNext, goPrev, goToDate,
     addBlock, updateBlock, deleteBlock, reorderBlocks,
-    clearDay, duplicateDay,
+    clearDay, resetDay, duplicateDay,
     getDayNote, setDayNote,
     datesWithSchedules,
   };

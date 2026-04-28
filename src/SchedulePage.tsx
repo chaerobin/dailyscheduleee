@@ -13,7 +13,7 @@ export function SchedulePage() {
   const {
     blocks, currentDate, canGoPrev, goToday, goNext, goPrev,
     addBlock, updateBlock, deleteBlock, reorderBlocks,
-    clearDay, duplicateDay, datesWithSchedules,
+    clearDay, resetDay, duplicateDay, datesWithSchedules,
   } = useSchedule();
 
   const [editMode, setEditMode] = useState(false);
@@ -41,6 +41,7 @@ export function SchedulePage() {
               <DayActionsMenu
                 currentDate={currentDate}
                 onClear={clearDay}
+                onReset={resetDay}
                 onDuplicateFrom={duplicateDay}
                 datesWithSchedules={datesWithSchedules}
               />
@@ -97,7 +98,7 @@ function NavTab({ label, active, onClick }: {
     <button
       onClick={onClick}
       style={{
-        flex: 1, maxWidth: 140, padding: '6px 0 5px',
+        flex: 1, maxWidth: 140, padding: '6px 0 5pt',
         background: 'transparent', border: 'none', cursor: 'pointer',
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
       }}
