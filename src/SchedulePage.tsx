@@ -62,8 +62,27 @@ export function SchedulePage() {
               onClose={() => setShowAdd(false)}
             />
           )}
+
+          {/* Refresh button — centered below schedule, matches Plan Day tab style */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+            <button
+              type="button"
+              onClick={() => {
+                if (confirm('Refresh this day to the latest default schedule?')) {
+                  resetDay();
+                }
+              }}
+              style={{
+                padding: 10, background: 'transparent', color: '#b0a898',
+                border: 'none', fontFamily: 'DM Sans, sans-serif', fontSize: 11, cursor: 'pointer',
+              }}
+            >
+              Refresh
+            </button>
+          </div>
         </div>
       </div>
+
       <div style={{ display: tab === 'plan' ? 'block' : 'none' }}>
         <SurveyPage />
       </div>
@@ -98,7 +117,7 @@ function NavTab({ label, active, onClick }: {
     <button
       onClick={onClick}
       style={{
-        flex: 1, maxWidth: 140, padding: '6px 0 5pt',
+        flex: 1, maxWidth: 140, padding: '6px 0 5px',
         background: 'transparent', border: 'none', cursor: 'pointer',
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
       }}
