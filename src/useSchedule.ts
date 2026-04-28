@@ -9,7 +9,7 @@ import { getDefaultSchedule, CUSTOM_SCHEDULE_DATES } from './defaultSchedule';
 
 function migrateStore(s: ScheduleStore): ScheduleStore {
   const SCHEMA_KEY = 'schedule_schema_v';
-  const CURRENT_VERSION = 20;
+  const CURRENT_VERSION = 21;
   const stored = parseInt(localStorage.getItem(SCHEMA_KEY) ?? '0', 10);
   if (stored >= CURRENT_VERSION) return s;
 
@@ -149,6 +149,13 @@ function migrateStore(s: ScheduleStore): ScheduleStore {
   // V19→V20: Saturday morning pushed back 1h40m, DND shrinks to 4h25m (5:10–9:35 PM).
   if (stored < 20) {
     delete migrated['2026-04-25']; changed = true;
+  }
+
+  // V20→V21: Reseed Apr 28–May 3 with updated weekly schedule.
+  if (stored < 21) {
+    for (const d of ['2026-04-28','2026-04-29','2026-04-30','2026-05-01','2026-05-02','2026-05-03']) {
+      delete migrated[d]; changed = true;
+    }
   }
 
   if (changed) saveSchedules(migrated);
