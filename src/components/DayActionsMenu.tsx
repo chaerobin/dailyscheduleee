@@ -76,15 +76,6 @@ export function DayActionsMenu({ currentDate, onClear, onReset, onDuplicateFrom,
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <MenuBtn label="Copy from another day" onClick={() => setShowDuplicate(true)} />
             <MenuBtn
-              label="Reset to default"
-              onClick={() => {
-                if (confirm('Reset this day to the default schedule? Any changes will be lost.')) {
-                  onReset();
-                  setOpen(false);
-                }
-              }}
-            />
-            <MenuBtn
               label="Clear this day"
               onClick={() => { if (confirm('Clear all blocks from this day?')) { onClear(); setOpen(false); } }}
               danger
