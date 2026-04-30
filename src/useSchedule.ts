@@ -6,6 +6,7 @@ import {
   todayStr, offsetDate,
 } from './storage';
 import { getDefaultSchedule, CUSTOM_SCHEDULE_DATES } from './defaultSchedule';
+import { parseStartMinutes } from './components/AddBlockModal';
 
 function migrateStore(s: ScheduleStore): ScheduleStore {
   const SCHEMA_KEY = 'schedule_schema_v';
@@ -24,8 +25,6 @@ function migrateStore(s: ScheduleStore): ScheduleStore {
     });
 
     // V2→V3: Work day is 9–5; 4pm blocks belong in Work, Evening starts at 5pm.
-    // Find any block with section 'Evening' whose time begins before 5pm and clear it.
-    // Then assign section 'Evening' to the first block at or after 5:00 PM that lacks one.
     let eveningAssigned = false;
     const fixed = blocks.map((b, i) => {
       if (b.section === 'Evening') {
@@ -40,7 +39,6 @@ function migrateStore(s: ScheduleStore): ScheduleStore {
       }
       return b;
     }).map(b => {
-      // Give section 'Evening' to first 5pm+ block that has no section
       if (!eveningAssigned && !b.section) {
         const m = b.time.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)/i);
         if (m) {
@@ -57,98 +55,38 @@ function migrateStore(s: ScheduleStore): ScheduleStore {
     migrated[date] = fixed;
   }
 
-  // V3→V4: Replace the April 11 generic default with the custom schedule.
-  // V4→V5: Re-seed April 11 to fix wedding meeting category (work → home).
-  if (stored < 5 && migrated['2026-04-11']) {
-    delete migrated['2026-04-11'];
-    changed = true;
-  }
+  if (stored < 5 && migrated['2026-04-11']) { delete migrated['2026-04-11']; changed = true; }
+  if (stored < 7 && migrated['2026-04-13']) { delete migrated['2026-04-13']; changed = true; }
+  if (stored < 8 && migrated['2026-04-14']) { delete migrated['2026-04-14']; changed = true; }
+  if (stored < 9 && migrated['2026-04-15']) { delete migrated['2026-04-15']; changed = true; }
+  if (stored < 10 && migrated['2026-04-16']) { delete migrated['2026-04-16']; changed = true; }
+  if (stored < 11 && migrated['2026-04-17']) { delete migrated['2026-04-17']; changed = true; }
 
-  // V5→V6: Re-seed April 13 to fix Taxes category (work → home).
-  // V6→V7: Replace April 13 with updated schedule from LittleBird.
-  if (stored < 7 && migrated['2026-04-13']) {
-    delete migrated['2026-04-13'];
-    changed = true;
-  }
-
-  // V7→V8: Seed April 14 with custom schedule (replaces any generic default).
-  if (stored < 8 && migrated['2026-04-14']) {
-    delete migrated['2026-04-14'];
-    changed = true;
-  }
-
-  // V8→V9: Seed April 15 with custom schedule.
-  if (stored < 9 && migrated['2026-04-15']) {
-    delete migrated['2026-04-15'];
-    changed = true;
-  }
-
-  // V9→V10: Seed April 16 with custom schedule.
-  if (stored < 10 && migrated['2026-04-16']) {
-    delete migrated['2026-04-16'];
-    changed = true;
-  }
-
-  // V10→V11: Seed April 17 with custom schedule.
-  if (stored < 11 && migrated['2026-04-17']) {
-    delete migrated['2026-04-17'];
-    changed = true;
-  }
-
-  // V11→V12: Seed April 20–26 with custom schedules.
   if (stored < 12) {
     for (const d of ['2026-04-20','2026-04-21','2026-04-22','2026-04-23','2026-04-24','2026-04-25','2026-04-26']) {
       if (migrated[d]) { delete migrated[d]; changed = true; }
     }
   }
-
-  // V12→V13: Replace April 20–26 with final corrected schedules.
   if (stored < 13) {
     for (const d of ['2026-04-20','2026-04-21','2026-04-22','2026-04-23','2026-04-24','2026-04-25','2026-04-26']) {
       delete migrated[d]; changed = true;
     }
   }
-
-  // V13→V14: Add Emergency Fund + Create TikTok to April 21 evening.
-  if (stored < 14) {
-    delete migrated['2026-04-21']; changed = true;
-  }
-
-  // V14→V15: Wed morning slim-down + Thu/Fri/Sat/Sun task redistribution.
+  if (stored < 14) { delete migrated['2026-04-21']; changed = true; }
   if (stored < 15) {
     for (const d of ['2026-04-22','2026-04-23','2026-04-24','2026-04-25','2026-04-26']) {
       delete migrated[d]; changed = true;
     }
   }
-
-  // V15→V16: Fri/Sat/Sun rebuilt.
   if (stored < 16) {
     for (const d of ['2026-04-24','2026-04-25','2026-04-26']) {
       delete migrated[d]; changed = true;
     }
   }
-
-  // V16→V17: Sunday Meal Prep + rest of day pushed 45 min later.
-  if (stored < 17) {
-    delete migrated['2026-04-26']; changed = true;
-  }
-
-  // V17→V18: Sunday Makeup Practice moved to morning Floater slot.
-  if (stored < 18) {
-    delete migrated['2026-04-26']; changed = true;
-  }
-
-  // V18→V19: Saturday fully rebuilt.
-  if (stored < 19) {
-    delete migrated['2026-04-25']; changed = true;
-  }
-
-  // V19→V20: Saturday morning pushed back 1h40m.
-  if (stored < 20) {
-    delete migrated['2026-04-25']; changed = true;
-  }
-
-  // V20→V21: Reseed Apr 28–May 3 with updated weekly schedule.
+  if (stored < 17) { delete migrated['2026-04-26']; changed = true; }
+  if (stored < 18) { delete migrated['2026-04-26']; changed = true; }
+  if (stored < 19) { delete migrated['2026-04-25']; changed = true; }
+  if (stored < 20) { delete migrated['2026-04-25']; changed = true; }
   if (stored < 21) {
     for (const d of ['2026-04-28','2026-04-29','2026-04-30','2026-05-01','2026-05-02','2026-05-03']) {
       delete migrated[d]; changed = true;
@@ -165,22 +103,14 @@ export function useSchedule() {
     let s = loadSchedules();
     s = migrateStore(s);
     const today = todayStr();
-    // Seed today's generic default
     if (!s[today]) {
       const defaults = getDefaultSchedule(today);
-      if (defaults.length > 0) {
-        s[today] = defaults;
-        saveSchedules(s);
-      }
+      if (defaults.length > 0) { s[today] = defaults; saveSchedules(s); }
     }
-    // Seed any custom pre-built dates that haven't been loaded yet
     for (const d of CUSTOM_SCHEDULE_DATES) {
       if (!s[d]) {
         const defaults = getDefaultSchedule(d);
-        if (defaults.length > 0) {
-          s[d] = defaults;
-          saveSchedules(s);
-        }
+        if (defaults.length > 0) { s[d] = defaults; saveSchedules(s); }
       }
     }
     return s;
@@ -202,28 +132,26 @@ export function useSchedule() {
   }, []);
 
   const today = todayStr();
-
-  // Can only go back to today — never before today
   const canGoPrev = currentDate > today;
 
   const goToday = useCallback(() => setCurrentDate(todayStr()), []);
-
   const goNext = useCallback(() => setCurrentDate(d => offsetDate(d, 1)), []);
-
   const goPrev = useCallback(() => {
     setCurrentDate(d => {
       const prev = offsetDate(d, -1);
       return prev >= todayStr() ? prev : todayStr();
     });
   }, []);
-
   const goToDate = useCallback((date: string) => {
     if (date >= todayStr()) setCurrentDate(date);
   }, []);
 
   const addBlock = useCallback((block: Omit<ScheduleBlock, 'id' | 'date'>) => {
     const newBlock: ScheduleBlock = { ...block, id: crypto.randomUUID(), date: currentDate };
-    updateStore(setBlocksForDate(store, currentDate, [...blocks, newBlock]));
+    const updated = [...blocks, newBlock].sort(
+      (a, b) => parseStartMinutes(a.time) - parseStartMinutes(b.time)
+    );
+    updateStore(setBlocksForDate(store, currentDate, updated));
   }, [blocks, currentDate, store, updateStore]);
 
   const updateBlock = useCallback((id: string, changes: Partial<ScheduleBlock>) => {
@@ -248,8 +176,7 @@ export function useSchedule() {
 
   const resetDay = useCallback(() => {
     const defaults = getDefaultSchedule(currentDate);
-    const next = setBlocksForDate(store, currentDate, defaults);
-    updateStore(next);
+    updateStore(setBlocksForDate(store, currentDate, defaults));
   }, [currentDate, store, updateStore]);
 
   const duplicateDay = useCallback((fromDate: string) => {
@@ -257,7 +184,6 @@ export function useSchedule() {
   }, [currentDate, store, updateStore]);
 
   const getDayNote = useCallback(() => notes[currentDate] ?? '', [notes, currentDate]);
-
   const setDayNote = useCallback((note: string) => {
     updateNotes({ ...notes, [currentDate]: note });
   }, [notes, currentDate, updateNotes]);
