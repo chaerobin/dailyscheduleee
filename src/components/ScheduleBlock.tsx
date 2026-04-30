@@ -3,7 +3,7 @@ import type { ScheduleBlock as ScheduleBlockType, Category } from '../types';
 import { CATEGORY_CONFIG } from '../categoryConfig';
 import { EditableField } from './EditableField';
 
-const PICKER_CATEGORIES: Category[] = ['work', 'fitness', 'errand', 'key'];
+const PICKER_CATEGORIES: Category[] = ['work', 'fitness', 'home', 'errand', 'key'];
 
 interface ScheduleBlockProps {
   block: ScheduleBlockType;

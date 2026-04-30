@@ -109,7 +109,7 @@ function Drum({
 // ── Time picker state helpers ────────────────────────────────────────────────
 
 const HOURS = Array.from({ length: 12 }, (_, i) => String(i + 1));
-const MINUTES = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
+const MINUTES = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
 const AMPM = ['AM', 'PM'];
 
 function timeToStr(startH: string, startM: string, startA: string, endH: string, endM: string, endA: string) {
@@ -141,11 +141,13 @@ export function AddBlockModal({ onAdd, onClose }: AddBlockModalProps) {
   const [section, setSection] = useState('');
   const [category, setCategory] = useState<Category>('work');
   const [badgeText, setBadgeText] = useState('');
+  const [useTextInput, setUseTextInput] = useState(false);
+  const [manualTime, setManualTime] = useState('');
 
   // Time picker state
   const now = new Date();
   const initHour = String(now.getHours() % 12 || 12);
-  const initMin = MINUTES[Math.round(now.getMinutes() / 5)] ?? '00';
+  const initMin = String(now.getMinutes()).padStart(2, '0');
   const initAmpm = now.getHours() < 12 ? 'AM' : 'PM';
   const initEndHour = String((now.getHours() % 12) + 1 > 12 ? 1 : (now.getHours() % 12) + 1);
 
@@ -159,7 +161,9 @@ export function AddBlockModal({ onAdd, onClose }: AddBlockModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
-    const timeStr = timeToStr(startH, startM, startA, endH, endM, endA);
+    const timeStr = useTextInput
+      ? manualTime.trim()
+      : timeToStr(startH, startM, startA, endH, endM, endA);
     onAdd({
       section: section.trim() || undefined,
       time: timeStr,
@@ -196,24 +200,50 @@ export function AddBlockModal({ onAdd, onClose }: AddBlockModalProps) {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Time picker */}
-          <FieldRow label="Start time">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, background: '#f5f0e8', borderRadius: 10, padding: '4px 8px' }}>
-              <Drum items={HOURS} selected={startH} onSelect={setStartH} width={52} />
-              <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 18, color: '#3a3228', fontWeight: 500 }}>:</span>
-              <Drum items={MINUTES} selected={startM} onSelect={setStartM} width={52} />
-              <Drum items={AMPM} selected={startA} onSelect={setStartA} width={52} />
-            </div>
-          </FieldRow>
+          {/* Time input mode toggle */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 4 }}>
+            <button
+              type="button"
+              onClick={() => setUseTextInput(t => !t)}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontSize: 10, color: '#9a8f82', fontFamily: 'DM Sans, sans-serif',
+                textDecoration: 'underline', padding: 0,
+              }}
+            >
+              {useTextInput ? 'Use rotary picker' : 'Type instead'}
+            </button>
+          </div>
 
-          <FieldRow label="End time">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, background: '#f5f0e8', borderRadius: 10, padding: '4px 8px' }}>
-              <Drum items={HOURS} selected={endH} onSelect={setEndH} width={52} />
-              <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 18, color: '#3a3228', fontWeight: 500 }}>:</span>
-              <Drum items={MINUTES} selected={endM} onSelect={setEndM} width={52} />
-              <Drum items={AMPM} selected={endA} onSelect={setEndA} width={52} />
-            </div>
-          </FieldRow>
+          {useTextInput ? (
+            <FieldRow label="Time">
+              <input
+                value={manualTime}
+                onChange={e => setManualTime(e.target.value)}
+                placeholder="9:00 – 10:00 AM"
+                style={inputStyle}
+              />
+            </FieldRow>
+          ) : (
+            <>
+              <FieldRow label="Start time">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, background: '#f5f0e8', borderRadius: 10, padding: '4px 8px' }}>
+                  <Drum items={HOURS} selected={startH} onSelect={setStartH} width={52} />
+                  <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 18, color: '#3a3228', fontWeight: 500 }}>:</span>
+                  <Drum items={MINUTES} selected={startM} onSelect={setStartM} width={52} />
+                  <Drum items={AMPM} selected={startA} onSelect={setStartA} width={52} />
+                </div>
+              </FieldRow>
+              <FieldRow label="End time">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, background: '#f5f0e8', borderRadius: 10, padding: '4px 8px' }}>
+                  <Drum items={HOURS} selected={endH} onSelect={setEndH} width={52} />
+                  <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 18, color: '#3a3228', fontWeight: 500 }}>:</span>
+                  <Drum items={MINUTES} selected={endM} onSelect={setEndM} width={52} />
+                  <Drum items={AMPM} selected={endA} onSelect={setEndA} width={52} />
+                </div>
+              </FieldRow>
+            </>
+          )}
 
           <FieldRow label="Title *">
             <input required value={title} onChange={e => setTitle(e.target.value)} placeholder="Block title" style={inputStyle} />
