@@ -18,7 +18,7 @@ interface AddBlockModalProps {
 
 // ── Rotary drum helpers ──────────────────────────────────────────────────────
 
-const ITEM_H = 40; // px per drum cell
+const ITEM_H = 28; // px per drum cell — compact for mobile
 
 function Drum({
   items,
@@ -91,7 +91,7 @@ function Drum({
             style={{
               height: ITEM_H, display: 'flex', alignItems: 'center', justifyContent: 'center',
               scrollSnapAlign: 'center',
-              fontFamily: 'DM Sans, sans-serif', fontSize: 15,
+              fontFamily: 'DM Sans, sans-serif', fontSize: 13,
               color: item === selected ? '#3a3228' : '#9a8f82',
               fontWeight: item === selected ? 500 : 400,
               cursor: 'pointer', userSelect: 'none',
@@ -185,12 +185,12 @@ export function AddBlockModal({ onAdd, onClose }: AddBlockModalProps) {
       <div
         style={{
           background: '#faf7f2', borderRadius: '16px 16px 0 0',
-          padding: '24px 20px 44px', width: '100%', maxWidth: 480,
-          border: '1px solid #ddd8ce', maxHeight: '90vh', overflowY: 'auto',
+          padding: '16px 20px 32px', width: '100%', maxWidth: 480,
+          border: '1px solid #ddd8ce', maxHeight: '60vh', overflowY: 'auto',
         }}
         onClick={e => e.stopPropagation()}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <h2 style={{ fontFamily: 'Lora, serif', fontSize: 17, fontWeight: 600, color: '#3a3228' }}>Add Block</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#9a8f82', lineHeight: 1 }}>×</button>
         </div>
@@ -276,7 +276,7 @@ export function AddBlockModal({ onAdd, onClose }: AddBlockModalProps) {
 
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 14 }}>
+    <div style={{ marginBottom: 10 }}>
       <label style={{
         display: 'block', fontSize: 10, fontWeight: 500, color: '#9a8f82',
         textTransform: 'uppercase', letterSpacing: '0.09em', marginBottom: 5,
