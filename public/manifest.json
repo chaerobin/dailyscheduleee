@@ -2,7 +2,7 @@
   "name": "Daily Schedule",
   "short_name": "Schedule",
   "description": "Personal daily schedule planner",
-  "start_url": "/",
+  "start_url": "/dailyscheduleee/",
   "display": "standalone",
   "background_color": "#f5f0e8",
   "theme_color": "#f5f0e8",
