@@ -21,9 +21,9 @@
 
 export const SCHEDULE_DATA = `
 2026-05-14
-7:00 – 8:30 AM | Gym | category: fitness |
-8:30 – 9:00 AM | Shower | category: home |
-9:00 – 9:30 AM | Finish Packing | category: home |
-9:30 – 10:00 AM | Breakfast | category: home | details: Wash water bottle
-10:00 AM | Depart | category: key |
+7:00 – 8:30 AM | Gym | [fitness] |
+8:30 – 9:00 AM | Shower | [home] |
+9:00 – 9:30 AM | Finish Packing | [home] |
+9:30 – 10:00 AM | Breakfast | [home] | Wash water bottle
+10:00 AM | Depart | [key] |
 `;
